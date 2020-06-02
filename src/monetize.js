@@ -39,6 +39,12 @@ const setPaymentPage = (r, wallets, current) => {
   });
 };
 
+const overrideVisibility = `
+Object.defineProperty(window.document,'hidden',{get:function(){return false;},configurable:true});
+Object.defineProperty(window.document,'visibilityState',{get:function(){return 'visible';},configurable:true});
+window.document.dispatchEvent(new Event('visibilitychange'));
+`;
+
 let current = 0;
 
 const monetize = async (wallets) => {
@@ -49,6 +55,9 @@ const monetize = async (wallets) => {
       args: [
         `--disable-extensions-except=${__dirname}/coil-extension`,
         `--load-extension=${__dirname}/coil-extension`,
+        `--disable-backgrounding-occluded-windows`,
+        `--disable-renderer-backgrounding`,
+        `--disable-background-timer-throttling`,
       ],
     });
     const pages = await browser.pages();
@@ -64,14 +73,14 @@ const monetize = async (wallets) => {
       let oldPage = page;
       while (1) {
         page = await browser.newPage({ selected: false });
-        await page.waitFor(1000);
         await oldPage.close();
         oldPage = page;
         await page.setRequestInterception(true);
         page.on("request", (r) => {
           setPaymentPage(r, wallets, current);
         });
-        await page.goto("https://coil.com/");
+        await page.goto("https://example.com/");
+        await page.evaluate(overrideVisibility);
         current = (current + 1) % wallets.length;
         await page.waitFor(20000);
         await page.setRequestInterception(false);
