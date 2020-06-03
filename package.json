@@ -1,6 +1,6 @@
 {
-  "name": "coil-extension-wrapper",
-  "version": "0.0.5",
+  "name": "wrapper-coil-extension",
+  "version": "0.0.1",
   "description": "A wrapper for coil's web monetization extenion to make it run from node.js",
   "main": "index.js",
   "scripts": {},
@@ -18,10 +18,10 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/projectescape/coil-extension-wrapper.git"
+    "url": "git+https://github.com/projectescape/wrapper-coil-extension.git"
   },
   "bugs": {
-    "url": "https://github.com/projectescape/coil-extension-wrapper/issues"
+    "url": "https://github.com/projectescape/wrapper-coil-extension/issues"
   },
-  "homepage": "https://github.com/projectescape/coil-extension-wrapper#readme"
+  "homepage": "https://github.com/projectescape/wrapper-coil-extension#readme"
 }
