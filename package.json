@@ -1,15 +1,27 @@
 {
-  "name": "coil-cli-wrapper",
-  "version": "0.0.1",
-  "description": "",
+  "name": "coil-extension-wrapper",
+  "version": "0.0.5",
+  "description": "A wrapper for coil's web monetization extenion to make it run from node.js",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
+  "scripts": {},
+  "keywords": [
+    "coil",
+    "monetization",
+    "webmonetization",
+    "cli"
+  ],
+  "author": "projectescape",
   "license": "MIT",
   "dependencies": {
     "puppeteer": "^3.2.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/projectescape/coil-extension-wrapper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/projectescape/coil-extension-wrapper/issues"
+  },
+  "homepage": "https://github.com/projectescape/coil-extension-wrapper#readme"
 }
