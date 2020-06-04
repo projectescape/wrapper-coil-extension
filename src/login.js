@@ -20,13 +20,12 @@ const login = async () => {
       JSON.stringify({ token }),
       (err) => {
         if (err) {
-          console.log("Unable to write to file", err);
+          console.log("Unable to write to login", err);
         }
       }
     );
     console.log("Logged in");
     await browser.close();
-    process.exit();
   });
 };
 
