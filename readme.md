@@ -27,7 +27,36 @@ logout();
 
 // To start Monetization, documentation in progress
 
-monetize();
+monetize(monetizationPackages[,timeout]);
+```
+
+monetizationPackages is an object of the type which is passed by `monetize-npm-cli`
+
+```javascript
+// monetizationPackages
+
+{
+    packages:[
+        {
+          name: "",
+          version: "",
+          webMonetization: {
+              wallet:""
+          },
+          state: "",
+          monetizationpending: [],
+          monetizationstart: [],
+          monetizationstop: [],
+          monetizationprogress: [],
+        }
+    ],
+    invokeListener(i,listener){
+        // i is the index of package
+        // listener is the name of listeners to invoke
+        // monetizationpending || monetizationstart || monetizationstop || monetizationprogress
+    }
+}
+
 ```
 
 ---

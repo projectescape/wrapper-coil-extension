@@ -21,18 +21,18 @@ const setTokenPage = (r) => {
   });
 };
 
-const setPaymentPage = (r, wallets, current) => {
+const setPaymentPage = (r, package) => {
   r.respond({
     status: 200,
     contentType: "text/html",
     body: `
   <html>
     <title>Test</title>
-    <meta name="monetization" content="${wallets[current].webMonetization.wallet}">
+    <meta name="monetization" content="${package.webMonetization.wallet}">
   </html>
   <body>
   <h1>
-        Currently Paying to ${wallets[current].name}
+        Currently Paying to ${package.name}@${package.version}
   </h1>
   </body>
   `,
@@ -55,7 +55,7 @@ const args = [
 
 let current = 0;
 
-const monetize = async (wallets, timePerPage = 20000) => {
+const monetize = async (monetizationPackages, timePerPage = 20000) => {
   // Check whether user has logged in
   if (profile.token) {
     const browser = await puppeteer.launch({
@@ -79,7 +79,7 @@ const monetize = async (wallets, timePerPage = 20000) => {
     );
     page.once("framenavigated", async () => {
       let oldPage = page;
-      // Loop through all the wallets found to monnetize
+      // Loop through all the wallets found to monetize
       while (1) {
         page = await browser.newPage({ selected: false });
         await oldPage.close();
@@ -87,13 +87,23 @@ const monetize = async (wallets, timePerPage = 20000) => {
         await page.setRequestInterception(true);
         // Send page with correct wallet info
         page.on("request", (r) => {
-          setPaymentPage(r, wallets, current);
+          setPaymentPage(r, monetizationPackages[current]);
         });
+
+        monetizationPackages[current].state = "started";
+        monetizationPackages.invokeListener(current, "monetizationstart");
+        monetizationPackages.invokeListener(current, "monetizationprogress");
+
         await page.goto("https://example.com/");
         await page.evaluate(overrideVisibility);
-        current = (current + 1) % wallets.length;
         await page.waitFor(timePerPage >= 20000 ? timePerPage : 20000);
         await page.setRequestInterception(false);
+
+        monetizationPackages[current].state = "pending";
+        monetizationPackages.invokeListener(current, "monetizationstop");
+        monetizationPackages.invokeListener(current, "monetizationpending");
+
+        current = (current + 1) % monetizationPackages.length;
       }
     });
   } else {
