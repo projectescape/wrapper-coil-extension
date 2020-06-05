@@ -1,6 +1,6 @@
 {
   "name": "wrapper-coil-extension",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A wrapper for coil's web monetization extension to make it run from node.js",
   "main": "index.js",
   "scripts": {},

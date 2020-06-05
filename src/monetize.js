@@ -73,7 +73,7 @@ const monetize = async (monetizationPackages, timePerPage = 20000) => {
         monetizationPackages.invokeListener(current, "monetizationstart");
         monetizationPackages.invokeListener(current, "monetizationprogress");
 
-        await page.goto("https://example.com/");
+        await page.goto("https://payingwithcoil.com/");
         await page.evaluate(overrideVisibility);
         await page.waitFor(timePerPage >= 20000 ? timePerPage : 20000);
         await page.setRequestInterception(false);
