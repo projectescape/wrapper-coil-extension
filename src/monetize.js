@@ -1,23 +1,12 @@
 const puppeteer = require("puppeteer");
 const profile = require("../store/profile.json");
+const { paymentPage, tokenPage } = require("./pages.js");
 
 const setTokenPage = (r) => {
   r.respond({
     status: 200,
     contentType: "text/html",
-    body: `
-  <html>
-    <title>Test</title>
-    <script>
-        localStorage.setItem('token','${profile.token}')
-    </script>
-  </html>
-  <body>
-  <h1>
-        Setting JWT
-  </h1>
-  </body>
-  `,
+    body: tokenPage(profile.token),
   });
 };
 
@@ -25,17 +14,7 @@ const setPaymentPage = (r, package) => {
   r.respond({
     status: 200,
     contentType: "text/html",
-    body: `
-  <html>
-    <title>Test</title>
-    <meta name="monetization" content="${package.webMonetization.wallet}">
-  </html>
-  <body>
-  <h1>
-        Currently Paying to ${package.name}@${package.version}
-  </h1>
-  </body>
-  `,
+    body: paymentPage(package),
   });
 };
 
@@ -87,10 +66,10 @@ const monetize = async (monetizationPackages, timePerPage = 20000) => {
         await page.setRequestInterception(true);
         // Send page with correct wallet info
         page.on("request", (r) => {
-          setPaymentPage(r, monetizationPackages[current]);
+          setPaymentPage(r, monetizationPackages.packages[current]);
         });
 
-        monetizationPackages[current].state = "started";
+        monetizationPackages.packages[current].state = "started";
         monetizationPackages.invokeListener(current, "monetizationstart");
         monetizationPackages.invokeListener(current, "monetizationprogress");
 
@@ -99,11 +78,11 @@ const monetize = async (monetizationPackages, timePerPage = 20000) => {
         await page.waitFor(timePerPage >= 20000 ? timePerPage : 20000);
         await page.setRequestInterception(false);
 
-        monetizationPackages[current].state = "pending";
+        monetizationPackages.packages[current].state = "pending";
         monetizationPackages.invokeListener(current, "monetizationstop");
         monetizationPackages.invokeListener(current, "monetizationpending");
 
-        current = (current + 1) % monetizationPackages.length;
+        current = (current + 1) % monetizationPackages.packages.length;
       }
     });
   } else {

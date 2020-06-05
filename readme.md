@@ -25,10 +25,21 @@ login();
 
 logout();
 
-// To start Monetization, documentation in progress
+// To start Monetization
 
 monetize(monetizationPackages[,timeout]);
 ```
+
+---
+
+### timeout
+
+timout defines how much time is spent on monetizing one package in queue
+timeout<20000 defaults to 20000
+
+---
+
+### monetizationPackages
 
 monetizationPackages is an object of the type which is passed by `monetize-npm-cli`
 
