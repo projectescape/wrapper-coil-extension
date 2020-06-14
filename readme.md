@@ -27,15 +27,16 @@ logout();
 
 // To start Monetization
 
-monetize(monetizationPackages[,timeout]);
+monetize(monetizationPackages);
 ```
 
 ---
 
 ### timeout
 
-timout defines how much time is spent on monetizing one package in queue
-timeout<20000 defaults to 20000
+#### (Depreciated)
+
+Since `v0.0.7`, timeout is no longer used as instead of looping through packages, probablistic revenue sharing is being used.
 
 ---
 
@@ -61,8 +62,8 @@ monetizationPackages is an object of the type which is passed by `monetize-npm-c
           monetizationprogress: [],
         }
     ],
-    invokeListener(i,listener){
-        // i is the index of package
+    invokeListener(data){
+        // data is the response argument received when any event is fired
         // listener is the name of listeners to invoke
         // monetizationpending || monetizationstart || monetizationstop || monetizationprogress
     }
@@ -74,10 +75,9 @@ monetizationPackages is an object of the type which is passed by `monetize-npm-c
 
 # API
 
-The aim of this wrapper was to mimic the web monetization API given [here](https://webmonetization.org/docs/api) as much as it could.
-Since the extension was never meant to be run from such an environment, all of the browser API is not fully supported.
-As Coil's Extension can only monetize the tab in the foreground, this wrapper loops all the wallets for set amount of time (which is the above passed timeout.)
-State of a package can be either `started` or `pending`, depending on whether it is being monetized currently or waiting in a queue. It initially starts off with `pending` and no listeners fired.
-When its the turn of a package to be monetized, state is set to `started` and event listeners set for `monetizationstart` and `monetizationprogress` are fired with no arguments. After timeout, state is set to `pending` and `monetizationstop` and `monetizationpending` events are fired with no arguments.
+The aim of this wrapper is to mimic the web monetization API given [here](https://webmonetization.org/docs/api) in a CLI environment.
+As Coil's Extension can only monetize the tab in foreground, this wrapper uses probabilistic revenue sharing for all the packages and packages are selected for 65 seconds each.
+Before `v0.0.7`, many of the functionalities weren't working the same as that in browser, but most of them have been solved now.
+The only remaining problem is that monetization won't work with puppeteer window minimized.
 
 ---

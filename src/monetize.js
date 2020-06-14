@@ -32,8 +32,6 @@ const args = [
   `--disable-background-timer-throttling`,
 ];
 
-let current = 0;
-
 const monetize = async (monetizationPackages, timePerPage = 20000) => {
   // Check whether user has logged in
   if (profile.token) {
@@ -54,36 +52,32 @@ const monetize = async (monetizationPackages, timePerPage = 20000) => {
     // Use token to login
     await page.goto("https://coil.com/login");
     console.log(
-      "If you are not being redirected automatically from the login page, please use the login command again, token may have expired or malformed"
+      "If you are not being redirected automatically from the login page, please use the login command again, token may have expired or malformed\n"
     );
     page.once("framenavigated", async () => {
-      let oldPage = page;
-      // Loop through all the wallets found to monetize
-      while (1) {
-        page = await browser.newPage({ selected: false });
-        await oldPage.close();
-        oldPage = page;
-        await page.setRequestInterception(true);
-        // Send page with correct wallet info
-        page.on("request", (r) => {
-          setPaymentPage(r, monetizationPackages.packages[current]);
-        });
+      const oldPage = page;
+      page = await browser.newPage();
+      await oldPage.close();
+      await page.setRequestInterception(true);
 
-        monetizationPackages.packages[current].state = "started";
-        monetizationPackages.invokeListener(current, "monetizationstart");
-        monetizationPackages.invokeListener(current, "monetizationprogress");
+      // Send page with monetization info
+      page.on("request", (r) => {
+        setPaymentPage(r, monetizationPackages.packages);
+      });
 
-        await page.goto("https://payingwithcoil.com/");
-        await page.evaluate(overrideVisibility);
-        await page.waitFor(timePerPage >= 20000 ? timePerPage : 20000);
-        await page.setRequestInterception(false);
+      // Exposing function to handle Event Listeners
 
-        monetizationPackages.packages[current].state = "pending";
-        monetizationPackages.invokeListener(current, "monetizationstop");
-        monetizationPackages.invokeListener(current, "monetizationpending");
+      await page.exposeFunction("handleEventListener", (data) => {
+        monetizationPackages.invokeEventListener(data);
+      });
 
-        current = (current + 1) % monetizationPackages.packages.length;
-      }
+      browser.on("targetcreated", async (target) => {
+        const page = await target.page();
+        if (page) page.close();
+      });
+
+      await page.goto("https://payingwithcoil.com/");
+      await page.evaluate(overrideVisibility);
     });
   } else {
     // User has not previously logged in
